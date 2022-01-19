@@ -5,14 +5,19 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
-	Request()
+	for i := 0; i < 100; i++ {
+		go Request(i)
+	}
+	time.Sleep(time.Second * 4)
 }
 
-func Request() {
-	response, err := http.Get("https://jsonplaceholder.typicode.com/posts")
+func Request(i int) {
+	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i)
+	response, err := http.Get(request)
 	if err != nil {
 		//todo logger
 		log.Fatal(err)
@@ -22,5 +27,5 @@ func Request() {
 		//todo logger
 		log.Fatal(err)
 	}
-	fmt.Println(readAll)
+	fmt.Println(string(readAll))
 }
