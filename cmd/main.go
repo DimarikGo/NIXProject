@@ -22,7 +22,6 @@ func main() {
 		file.Close()
 	}
 
-	time.Sleep(time.Second * 10)
 }
 func Request(i int) []byte {
 	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i+1)
