@@ -5,18 +5,27 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 func main() {
-	for i := 0; i < 100; i++ {
-		go Request(i)
-	}
-	time.Sleep(time.Second * 4)
-}
 
-func Request(i int) {
-	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i)
+	for i := 0; i < 100; i++ {
+		fileName := fmt.Sprintf("storage/posts/%d.txt", i+1)
+		file, err := os.Create(fileName)
+		result := Request(i)
+		_, err = file.Write(result)
+		if err != nil {
+			log.Fatalf("failed to write: %v\n", err)
+		}
+		file.Close()
+	}
+
+	time.Sleep(time.Second * 10)
+}
+func Request(i int) []byte {
+	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i+1)
 	response, err := http.Get(request)
 	if err != nil {
 		//todo logger
@@ -27,5 +36,5 @@ func Request(i int) {
 		//todo logger
 		log.Fatal(err)
 	}
-	fmt.Println(string(readAll))
+	return readAll
 }
