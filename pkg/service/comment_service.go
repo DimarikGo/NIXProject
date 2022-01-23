@@ -13,6 +13,6 @@ func NewCommentService(repo repository.Comments) *CommentService {
 	return &CommentService{repo: repo}
 }
 
-func (s *CommentService) AddC(postid int, comment Rest_Api.Comment) (int, error) {
-	return s.repo.AddC(postid, comment)
+func (s *CommentService) AddC(comment Rest_Api.Comment) (int, error) {
+	return s.repo.AddC(comment)
 }

@@ -7,12 +7,11 @@ import (
 )
 
 const (
-	uid          = "UserId"
-	T            = "title"
-	B            = "body"
-	tablePost    = "posts"
-	tablePostCom = "posts_comments"
-	p_id         = "post_id"
+	uid       = "UserId"
+	id_id     = "id"
+	T         = "title"
+	B         = "body"
+	tablePost = "posts"
 )
 
 type PostMysql struct {
@@ -24,28 +23,22 @@ func NewPostMysql(db *sql.DB) *PostMysql {
 }
 
 func (p *PostMysql) AddP(post Rest_Api.Post) (int, error) {
-	var postId int
-	//tx, _ := p.db.Begin()
-	//if err != nil {
-	//	return 0, err
-	//
-	//}
 
-	queryPost := fmt.Sprintf("INSERT INTO `%s` (`%v`,`%s`,`%s`) VALUES('%v', '%s','%s')", tablePost, uid, T, B, post.UserId, post.Title, post.Body)
+	queryPost := fmt.Sprintf("INSERT INTO `%s` (`%s`,`%s`,`%s`,`%s`) VALUES('%v',%v, '%s','%s')", tablePost, uid, id_id, T, B, post.UserId, post.Id, post.Title, post.Body)
 	_ = p.db.QueryRow(queryPost)
-	queryId := fmt.Sprintf("SELECT LAST_INSERT_ID(id) from posts")
-	d, _ := p.db.Query(queryId)
-	for d.Next() {
-		var id Rest_Api.Post
-		err := d.Scan(&id.Id)
-		if err != nil {
-			panic(err)
-		}
-		postId = id.Id
-	}
-	fmt.Println(postId)
+	//queryId := fmt.Sprintf("SELECT LAST_INSERT_ID(id) from posts")
+	//d, _ := p.db.Query(queryId)
+	//for d.Next() {
+	//	var id Rest_Api.Post
+	//	err := d.Scan(&id.Id)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	postId = id.Id
+	//}
+	//fmt.Println(postId)
 
-	return postId, nil
+	return post.Id, nil
 }
 
 //defer rows.Close()

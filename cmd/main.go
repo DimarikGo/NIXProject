@@ -1,68 +1,94 @@
 package main
 
 import (
-	"Rest-Api"
+	Rest_Api "Rest-Api"
 	"Rest-Api/pkg/repository"
 	"Rest-Api/pkg/service"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
+	num := 2
 
-	//for i := 0; i < 100; i++ {
-	//	fileName := fmt.Sprintf("storage/posts/%d.txt", i+1)
-	//	file, err := os.Create(fileName)
-	//	result := Request(i)
-	//	_, err = file.Write(result)
-	//	if err != nil {
-	//		log.Fatalf("failed to write: %v\n", err)
-	//	}
-	//	file.Close()
-	//}
-	post1 := Rest_Api.Post{
-		UserId: 13,
-		Title:  "131 post",
-		Body:   "131 post",
-	}
-	db := repository.NewMysqlDb(repository.Config{
+	db, err := repository.NewMysqlDb(repository.Config{
 		Name:     "root",
 		Password: "11111111",
 		DBName:   "NIXdb",
 	})
-	//if err != nil {
-	//	log.Fatalf("failed init db: %s ", err.Error())
-	//}
+	if err != nil {
+		log.Fatalf("failed init db: %s ", err.Error())
+	}
 	repos := repository.NewRepository(db)
+
+	var postJ Rest_Api.Post
+	request := RequestPost(num)
+
+	if err = json.Unmarshal(request, &postJ); err != nil {
+		log.Fatalf("cant Unmarshal JSON: %s", err.Error())
+	}
+
 	newService := service.NewService(repos)
-	p, err := newService.AddP(post1)
+
+	post1 := Rest_Api.Post{
+		UserId: postJ.UserId,
+		Id:     postJ.Id,
+		Title:  postJ.Title,
+		Body:   postJ.Body,
+	}
+
+	d, err := newService.AddP(post1)
+	fmt.Println(d)
+
 	if err != nil {
-		return
+		log.Fatalf("failed add Post to db: %s ", err.Error())
 	}
-	comment := Rest_Api.Comment{
+	RequestComment := RequestComment(d)
+	var comments Rest_Api.Comments
 
-		Name:  "perviy comment",
-		Email: "fucktthemall@mail.com",
-		Body:  "my first comment",
+	json.Unmarshal(RequestComment, &comments)
+
+	for _, com := range comments {
+		comment := Rest_Api.Comment{
+			PostId: com.PostId,
+			Id:     com.Id,
+			Name:   com.Name,
+			Email:  com.Email,
+			Body:   com.Body,
+		}
+		go func(c Rest_Api.Comment) {
+			_, err := newService.AddC(comment)
+			if err != nil {
+				return
+			}
+		}(comment)
 	}
-	c, err := newService.AddC(p, comment)
-	if err != nil {
-		return
-	}
-	fmt.Println(c)
-	//service.repository.NewRepository(db).Add(post1)
-
-	//_, err := repos.Add(post1)
-	//if err != nil {
-	//	log.Fatal("in db no info", err.Error())
-	//}
-
+	time.Sleep(1 * time.Second)
 }
 
-func Request(i int) []byte {
-	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i+1)
+func RequestPost(i int) []byte {
+	fmt.Println(i)
+	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i)
+	response, err := http.Get(request)
+	if err != nil {
+		//todo logger
+		log.Fatal(err)
+	}
+	readAll, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		//todo logger
+		log.Fatal(err)
+	}
+	return readAll
+}
+
+func RequestComment(i int) []byte {
+	fmt.Println(i)
+	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/comments?postId=%v", i)
 	response, err := http.Get(request)
 	if err != nil {
 		//todo logger

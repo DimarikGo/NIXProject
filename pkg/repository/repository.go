@@ -10,7 +10,7 @@ type Post interface {
 }
 
 type Comments interface {
-	AddC(postid int, comment Rest_Api.Comment) (int, error)
+	AddC(comment Rest_Api.Comment) (int, error)
 }
 
 type Repository struct {
