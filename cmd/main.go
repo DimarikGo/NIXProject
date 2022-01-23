@@ -1,7 +1,7 @@
 package main
 
 import (
-	Rest_Api "Rest-Api"
+ 	"Rest-Api"
 	"Rest-Api/pkg/repository"
 	"Rest-Api/pkg/service"
 	"encoding/json"
