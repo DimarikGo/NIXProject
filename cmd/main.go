@@ -42,7 +42,7 @@ func main() {
 	}
 
 	d, err := service.AddP(post1)
-	fmt.Println(d)
+	
 
 	if err != nil {
 		log.Fatalf("failed add Post to db: %s ", err.Error())
