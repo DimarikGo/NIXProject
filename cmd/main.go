@@ -32,7 +32,7 @@ func main() {
 		log.Fatalf("cant Unmarshal JSON: %s", err.Error())
 	}
 
-	newService := service.NewService(repos)
+	service := service.NewService(repos)
 
 	post1 := Rest_Api.Post{
 		UserId: postJ.UserId,
@@ -41,7 +41,7 @@ func main() {
 		Body:   postJ.Body,
 	}
 
-	d, err := newService.AddP(post1)
+	d, err := service.AddP(post1)
 	fmt.Println(d)
 
 	if err != nil {
