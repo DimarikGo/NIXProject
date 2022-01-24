@@ -26,17 +26,7 @@ func (p *PostMysql) AddP(post Rest_Api.Post) (int, error) {
 
 	queryPost := fmt.Sprintf("INSERT INTO `%s` (`%s`,`%s`,`%s`,`%s`) VALUES('%v',%v, '%s','%s')", tablePost, uid, id_id, T, B, post.UserId, post.Id, post.Title, post.Body)
 	_ = p.db.QueryRow(queryPost)
-	//queryId := fmt.Sprintf("SELECT LAST_INSERT_ID(id) from posts")
-	//d, _ := p.db.Query(queryId)
-	//for d.Next() {
-	//	var id Rest_Api.Post
-	//	err := d.Scan(&id.Id)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//	postId = id.Id
-	//}
-	//fmt.Println(postId)
+	
 
 	return post.Id, nil
 }
