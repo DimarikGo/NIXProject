@@ -31,6 +31,7 @@ func main() {
 		log.Fatalf("cant Unmarshal JSON: %s", err.Error())
 	}
 
+<<<<<<< HEAD
 	post := models.Post{
 		Id:     postJS.Id,
 		UserId: postJS.UserId,
@@ -60,6 +61,8 @@ func main() {
 			log.Fatalf("No comments add to db:%s", err.Error())
 		}
 	}
+=======
+>>>>>>> bcef8d228bb8d0c9f05e7f8aa1a1c2ef9b0aeb65
 }
 func RequestPost(i int) []byte {
 	request := fmt.Sprintf("https://jsonplaceholder.typicode.com/posts/%d", i)
