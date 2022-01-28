@@ -4,15 +4,15 @@ import "gorm.io/gorm"
 
 type Post struct {
 	gorm.Model
-	Id     int    `gorm:"<-"`
-	UserId int    `gorm:"<-"`
-	Title  string `gorm:"<-"`
-	Body   string `gorm:"<-"`
+	Id     int    `json:"id" gorm:"<-"`
+	UserId int    `json:"userId" gorm:"<-"`
+	Title  string `json:"title" gorm:"<-"`
+	Body   string `json:"body" gorm:"<-"`
 }
 
 type Comment struct {
 	gorm.Model
-	PostID int    `json:"postId" gorm:"<-"`
+	PostID int    `json:"post_id" gorm:"<-"`
 	Id     int    `json:"id" gorm:"<-"`
 	Name   string `json:"name" gorm:"<-"`
 	Email  string `json:"email" gorm:"<-"`

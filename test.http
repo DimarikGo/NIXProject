@@ -1,0 +1,57 @@
+GET localhost:8080/post/102
+
+###
+
+POST http://localhost:8080/post/add
+Content-Type: application/json
+
+{
+  "userid": 11,
+  "title": "title from request",
+  "body": "body from request"
+}
+
+###
+DELETE http://localhost:8080/post/del/100
+
+###
+PATCH http://localhost:8080/post/update/
+Content-Type: application/json
+
+{
+  "id": 1,
+  "userid": 1,
+  "title": "update title",
+  "body": "update body from request"
+}
+
+###
+GET localhost:8080/comments/1
+
+###
+
+POST http://localhost:8080/comments/add
+Content-Type: application/json
+
+{
+  "post_id": 1,
+  "name": "new comment",
+  "email": "post@ukr.net",
+  "body": "comment from Json"
+}
+
+###
+
+DELETE http://localhost:8080/comments/del/1
+
+###
+PATCH http://localhost:8080/comments/update/
+Content-Type: application/json
+
+{
+  "id": 1,
+  "post_id": 1,
+  "name": "update new comment",
+  "email": "update post@ukr.net",
+  "body": "update comment from Json"
+}
