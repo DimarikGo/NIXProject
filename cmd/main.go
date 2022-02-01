@@ -1,32 +1,22 @@
 package main
 
 import (
-	"Rest-Api"
-	"Rest-Api/models"
 	"Rest-Api/pkg/handler"
 	"Rest-Api/pkg/repository"
 	"Rest-Api/pkg/services"
-	"fmt"
-
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 func main() {
+	db := repository.Init()
+	repo := repository.NewRepository(*db)
 
-	gorm := repository.Init()
-	err := gorm.AutoMigrate(&models.Post{}, &models.Comment{})
-	if err != nil {
-		log.Fatal("models no migrate")
-	}
-	repo := repository.NewRepository(*gorm)
 	service := services.NewService(repo)
-	handlers := handler.NewHandler(service)
+	e := echo.New()
 
-	server := new(Rest_Api.Server)
-	err = server.Run("8080", handlers.InitRoutes())
-	fmt.Println("Rest-Api started")
-	if err != nil {
-		log.Fatalf("server doesn`t started:%s", err.Error())
-	}
+	routes := handler.NewHandler(service, e).InitRoutes()
+
+	e.Logger.Fatal(routes.Start("localhost:8080"))
+
 }

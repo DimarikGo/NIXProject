@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 type Post struct {
 	gorm.Model
 	Id     int    `json:"id" gorm:"<-"`
-	UserId int    `json:"userId" gorm:"<-"`
+	UserId int    `json:"user_id" gorm:"<-"`
 	Title  string `json:"title" gorm:"<-"`
 	Body   string `json:"body" gorm:"<-"`
 }

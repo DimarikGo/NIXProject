@@ -2,29 +2,52 @@ package handler
 
 import (
 	"Rest-Api/pkg/services"
-	"net/http"
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
 	services *services.Service
+	echo     *echo.Echo
 }
 
-func NewHandler(services *services.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *services.Service, echo *echo.Echo) *Handler {
+	return &Handler{
+		services: services,
+		echo:     echo}
 }
 
-func (h *Handler) InitRoutes() *http.ServeMux {
-	serveMux := http.NewServeMux()
+//
+//func (h *Handler) InitRoutes() *http.ServeMux {
+//
+//	serveMux := http.NewServeMux()
+//
+//	serveMux.HandleFunc("/post/add", h.AddPost)
+//	serveMux.HandleFunc("/post/", h.GetPost)
+//	serveMux.HandleFunc("/post/del/", h.DelPost)
+//	serveMux.HandleFunc("/post/update/", h.UpdatePost)
+//
+//	serveMux.HandleFunc("/comments/add", h.AddComment)
+//	serveMux.HandleFunc("/comments/", h.GetComment)
+//	serveMux.HandleFunc("/comments/del/", h.DelComment)
+//	serveMux.HandleFunc("/comments/update/", h.UpdateComment)
+//
+//	return serveMux
+//}
 
-	serveMux.HandleFunc("/post/add", h.AddPost)
-	serveMux.HandleFunc("/post/", h.GetPost)
-	serveMux.HandleFunc("/post/del/", h.DelPost)
-	serveMux.HandleFunc("/post/update/", h.UpdatePost)
+func (h *Handler) InitRoutes() *echo.Echo {
+	post := h.echo.Group("/post")
 
-	serveMux.HandleFunc("/comments/add", h.AddComment)
-	serveMux.HandleFunc("/comments/", h.GetComment)
-	serveMux.HandleFunc("/comments/del/", h.DelComment)
-	serveMux.HandleFunc("/comments/update/", h.UpdateComment)
+	post.POST("/add", h.AddPost)
+	post.PATCH("/patch/:id", h.UpdatePost)
+	post.DELETE("/del/:id", h.DelPost)
+	post.GET("/:id", h.GetPost)
 
-	return serveMux
+	comment := h.echo.Group("/comment")
+
+	comment.POST("/add", h.AddComment)
+	comment.PATCH("/update/:id", h.UpdateComment)
+	comment.DELETE("/del/:id", h.DelComment)
+	comment.GET("/:id", h.GetComment)
+
+	return h.echo
 }

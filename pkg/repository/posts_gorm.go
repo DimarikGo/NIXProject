@@ -2,7 +2,9 @@ package repository
 
 import (
 	"Rest-Api/models"
+	"github.com/go-pg/pg/v10"
 	"gorm.io/gorm"
+	"log"
 )
 
 type PostGorm struct {
@@ -13,7 +15,8 @@ func NewPostGorm(gorm gorm.DB) *PostGorm {
 	return &PostGorm{gorm: gorm}
 }
 
-func (g *PostGorm) Add(post models.Post) (int, error) {
+func (g *PostGorm) Add(post *models.Post) (*models.Post, error) {
+
 	query := models.Post{
 		Id:     post.Id,
 		UserId: post.UserId,
@@ -21,13 +24,17 @@ func (g *PostGorm) Add(post models.Post) (int, error) {
 		Body:   post.Body,
 	}
 	g.gorm.Create(&query)
-	return query.Id, nil
+	return post, nil
 }
 
-func (g *PostGorm) Get(id int) models.Post {
+func (g *PostGorm) Get(id int) (models.Post, error) {
 	var post models.Post
-	g.gorm.First(&post, "id=?", id)
-	return post
+	if err := g.gorm.First(&post, "id=?", id); err.Error != nil {
+		if g.gorm.Error == pg.ErrNoRows {
+			log.Fatalf("record not found: %s", err.Error)
+		}
+	}
+	return post, nil
 }
 
 func (g *PostGorm) Del(id int) (byte, error) {
@@ -35,12 +42,13 @@ func (g *PostGorm) Del(id int) (byte, error) {
 	return byte(id), nil
 }
 
-func (g *PostGorm) Update(post models.Post) models.Post {
+func (g *PostGorm) Update(post *models.Post, postId int) *models.Post {
 
-	g.gorm.Model(&models.Post{}).Where("id=?", post.Id).Updates(models.Post{
+	g.gorm.Model(&models.Post{}).Where("id=?", postId).Updates(models.Post{
 		UserId: post.UserId,
 		Title:  post.Title,
 		Body:   post.Body,
 	})
+
 	return post
 }

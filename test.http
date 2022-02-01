@@ -1,4 +1,5 @@
-GET localhost:8080/post/102
+GET http://localhost:8080/post/103
+
 
 ###
 
@@ -6,52 +7,50 @@ POST http://localhost:8080/post/add
 Content-Type: application/json
 
 {
-  "userid": 11,
-  "title": "title from request",
-  "body": "body from request"
+  "user_id": 12,
+  "title": "title echo from request",
+  "body": "body echo from request"
 }
 
 ###
-DELETE http://localhost:8080/post/del/100
+DELETE http://localhost:8080/post/del/103
 
 ###
-PATCH http://localhost:8080/post/update/
+PATCH http://localhost:8080/post/patch/105
 Content-Type: application/json
 
 {
-  "id": 1,
-  "userid": 1,
-  "title": "update title",
-  "body": "update body from request"
+  "user_id": 12,
+  "title": "update echo title",
+  "body": "update echo body from request"
 }
 
 ###
-GET localhost:8080/comments/1
+GET http://localhost:8080/comment/1
 
 ###
 
-POST http://localhost:8080/comments/add
+POST http://localhost:8080/comment/add
+Content-Type: application/json
+
+{
+  "post_id": 2,
+  "name": "new echo comment",
+  "email": " echopost@ukr.net",
+  "body": "comment echo from Json"
+}
+
+###
+
+DELETE http://localhost:8080/comment/del/502
+
+###
+PATCH http://localhost:8080/comment/update/499
 Content-Type: application/json
 
 {
   "post_id": 1,
-  "name": "new comment",
-  "email": "post@ukr.net",
-  "body": "comment from Json"
-}
-
-###
-
-DELETE http://localhost:8080/comments/del/1
-
-###
-PATCH http://localhost:8080/comments/update/
-Content-Type: application/json
-
-{
-  "id": 1,
-  "post_id": 1,
-  "name": "update new comment",
-  "email": "update post@ukr.net",
-  "body": "update comment from Json"
+  "name": "update echo new comment",
+  "email": "update echo post@ukr.net",
+  "body": "update echo comment from Json"
 }

@@ -2,80 +2,61 @@ package handler
 
 import (
 	"Rest-Api/models"
-	"encoding/json"
-	"io/ioutil"
-	"log"
+	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-func (h *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddPost(ctx echo.Context) error {
 	var post models.Post
-	b, err := ioutil.ReadAll(r.Body)
+	err := ctx.Bind(&post)
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not decode post data"))
 	}
-	defer r.Body.Close()
+	addPost, err := h.services.Post.Add(&post)
 
-	err = json.Unmarshal(b, &post)
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, errors.Wrap(err, "could not create post"))
 	}
-	_, err = h.services.Post.Add(post)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
+	return ctx.JSON(http.StatusCreated, addPost)
 }
 
-func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")
-	s := path[len(path)-1]
-	i, _ := strconv.Atoi(s)
-	get := h.services.Post.Get(i)
-	marshal, _ := json.Marshal(get)
-	_, err := w.Write(marshal)
+func (h *Handler) GetPost(ctx echo.Context) error {
+	param, _ := strconv.Atoi(ctx.Param("id"))
+	get, err := h.services.Post.Get(param)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
-
+	return ctx.JSON(http.StatusOK, get)
 }
 
-func (h *Handler) DelPost(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")
-	s := path[len(path)-1]
-	i, _ := strconv.Atoi(s)
-	id, err := h.services.Post.Del(i)
+func (h *Handler) DelPost(ctx echo.Context) error {
+	userID, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not parse post"))
 	}
-	ii := strconv.Itoa(int(id))
-	_, err = w.Write([]byte(r.Method + " id: " + ii))
+
+	delId, err := h.services.Post.Del(userID)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
+	return ctx.JSON(http.StatusOK, delId)
 }
 
-func (h *Handler) UpdatePost(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdatePost(ctx echo.Context) error {
 	var post models.Post
-	b, _ := ioutil.ReadAll(r.Body) // do error checking!
-	defer r.Body.Close()
-
-	err := json.Unmarshal(b, &post)
+	err := ctx.Bind(&post)
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not decode post data"))
 	}
-	update := h.services.Post.Update(post)
-	marshal, _ := json.Marshal(update)
-	_, err = w.Write(marshal)
+	postId, err := strconv.Atoi(ctx.Param("id"))
+
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not parse post"))
 	}
 
+	update := h.services.Post.Update(&post, postId)
+
+	return ctx.JSON(http.StatusOK, update)
 }

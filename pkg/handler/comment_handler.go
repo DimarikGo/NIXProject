@@ -2,107 +2,59 @@ package handler
 
 import (
 	"Rest-Api/models"
-	"encoding/json"
-	"encoding/xml"
-	"fmt"
-	"io/ioutil"
-	"log"
+	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-func (h *Handler) GetComment(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")
-	s := path[len(path)-1]
-	i, _ := strconv.Atoi(s)
-	fmt.Println(i)
-	get := h.services.Comment.Get(i)
-	for _, comment := range get {
-		bytes, err := xml.Marshal(comment)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		_, err = w.Write(bytes)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		marshal, _ := json.Marshal(comment)
-		_, err = w.Write(marshal)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
+func (h *Handler) GetComment(ctx echo.Context) error {
+	commentId, _ := strconv.Atoi(ctx.Param("id"))
+	get, err := h.services.Comment.Get(commentId)
+	if err != nil {
+		return err
 	}
+	return ctx.JSON(http.StatusOK, get)
 }
 
-func (h *Handler) AddComment(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddComment(ctx echo.Context) error {
 	var comment models.Comment
-	b, _ := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-
-	err := json.Unmarshal(b, &comment)
+	err := ctx.Bind(&comment)
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not decode comment data"))
 	}
-	_, err = h.services.Comment.Add(comment)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	_, err = w.Write(b)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	bytes, err := xml.Marshal(comment)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	_, err = w.Write(bytes)
+	addComment, err := h.services.Comment.Add(&comment)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, errors.Wrap(err, "could not create comment"))
 	}
+	return ctx.JSON(http.StatusCreated, addComment)
 }
-func (h *Handler) DelComment(w http.ResponseWriter, r *http.Request) {
-	path := strings.Split(r.URL.Path, "/")
-	s := path[len(path)-1]
-	i, _ := strconv.Atoi(s)
-	id, err := h.services.Comment.Del(i)
+func (h *Handler) DelComment(ctx echo.Context) error {
+	commentId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not parse comment"))
 	}
-	ii := strconv.Itoa(id)
-	_, err = w.Write([]byte(r.Method + " id:" + ii))
 
+	delId, err := h.services.Comment.Del(commentId)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
+	return ctx.JSON(http.StatusOK, delId)
 }
-func (h *Handler) UpdateComment(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateComment(ctx echo.Context) error {
 	var comment models.Comment
-	b, err := ioutil.ReadAll(r.Body)
+	err := ctx.Bind(&comment)
 	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not decode comment data"))
 	}
-	defer r.Body.Close()
+	commentId, err := strconv.Atoi(ctx.Param("id"))
 
-	err = json.Unmarshal(b, &comment)
 	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	update := h.services.Comment.Update(comment)
-	marshal, err := json.Marshal(update)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	_, err = w.Write(marshal)
-	if err != nil {
-		log.Fatal(err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not parse comment"))
 	}
 
-	bytes, err := xml.Marshal(comment)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	w.Write(bytes)
+	update := h.services.Comment.Update(&comment, commentId)
+
+	return ctx.JSON(http.StatusOK, update)
 }

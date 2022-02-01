@@ -6,17 +6,17 @@ import (
 )
 
 type Post interface {
-	Add(post models.Post) (int, error)
-	Get(id int) models.Post
+	Add(post *models.Post) (*models.Post, error)
+	Get(id int) (models.Post, error)
 	Del(id int) (byte, error)
-	Update(post models.Post) models.Post
+	Update(post *models.Post, postId int) *models.Post
 }
 
 type Comment interface {
-	Get(postId int) []models.Comment
+	Get(postId int) ([]models.Comment, error)
 	Del(id int) (int, error)
-	Add(comment models.Comment) (int, error)
-	Update(comment models.Comment) models.Comment
+	Add(comment *models.Comment) (*models.Comment, error)
+	Update(comment *models.Comment, commentId int) *models.Comment
 }
 
 type Repository struct {
