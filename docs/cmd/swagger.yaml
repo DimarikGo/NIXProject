@@ -1,0 +1,251 @@
+basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.Comment:
+    properties:
+      body:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      post_id:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.Post:
+    properties:
+      body:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a Rest-Api server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Rest-Api
+  version: "1.0"
+paths:
+  /comment/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get comment from DB table comment.
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get comment from DB.
+      tags:
+      - GetComment
+  /comment/add:
+    post:
+      consumes:
+      - application/json
+      description: Add comments in DB table comments.
+      parameters:
+      - description: List Comment
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add comments in DB.
+      tags:
+      - AddComment
+  /comment/del/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete comment from DB table comment.
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete comment from DB.
+      tags:
+      - DelComment
+  /comment/patch/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update comment from DB table comment.
+      parameters:
+      - description: Update List Comment
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update comment from DB.
+      tags:
+      - UpdateComment
+  /post/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get post from DB table post.
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get post from DB.
+      tags:
+      - GetPost
+  /post/add:
+    post:
+      consumes:
+      - application/json
+      description: Add post in DB table post.
+      parameters:
+      - description: List Post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add post in DB.
+      tags:
+      - AddPost
+  /post/del/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete post from DB table post.
+      parameters:
+      - description: Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete post from DB.
+      tags:
+      - DelPost
+  /post/patch/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update post from DB table post.
+      parameters:
+      - description: Update List Post
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update post from DB.
+      tags:
+      - UpdatePost
+schemes:
+- http
+swagger: "2.0"
