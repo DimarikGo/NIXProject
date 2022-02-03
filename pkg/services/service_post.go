@@ -13,8 +13,8 @@ func NewPostService(repo repository.Post) *PostService {
 	return &PostService{repo: repo}
 }
 
-func (s *PostService) Add(post *models.Post) (*models.Post, error) {
-	return s.repo.Add(post)
+func (s *PostService) Add(post *models.Post, id int) (*models.Post, error) {
+	return s.repo.Add(post, id)
 }
 
 func (s *PostService) Get(id int) (models.Post, error) {

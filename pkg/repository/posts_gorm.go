@@ -15,11 +15,11 @@ func NewPostGorm(gorm gorm.DB) *PostGorm {
 	return &PostGorm{gorm: gorm}
 }
 
-func (g *PostGorm) Add(post *models.Post) (*models.Post, error) {
+func (g *PostGorm) Add(post *models.Post, id int) (*models.Post, error) {
 
 	query := models.Post{
 		Id:     post.Id,
-		UserId: post.UserId,
+		UserId: id,
 		Title:  post.Title,
 		Body:   post.Body,
 	}

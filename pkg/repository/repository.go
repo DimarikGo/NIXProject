@@ -5,8 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type Authorization interface {
+	CreateUser(user *models.User) (int, error)
+	GetUser(username, password string) (models.User, error)
+}
+
 type Post interface {
-	Add(post *models.Post) (*models.Post, error)
+	Add(post *models.Post, id int) (*models.Post, error)
 	Get(id int) (models.Post, error)
 	Del(id int) (byte, error)
 	Update(post *models.Post, postId int) *models.Post
@@ -20,12 +25,15 @@ type Comment interface {
 }
 
 type Repository struct {
+	Authorization
 	Post
 	Comment
 }
 
 func NewRepository(gorm gorm.DB) *Repository {
 	return &Repository{
-		Post:    NewPostGorm(gorm),
-		Comment: NewCommentGorm(gorm)}
+		Authorization: NewAuthGorm(gorm),
+		Post:          NewPostGorm(gorm),
+		Comment:       NewCommentGorm(gorm)}
+
 }

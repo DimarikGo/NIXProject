@@ -19,12 +19,13 @@ import (
 // @Success 200 {object} map[string]interface{}
 // @Router /post/add [post]
 func (h *Handler) AddPost(ctx echo.Context) error {
+	id := ctx.Get(userCtx)
 	var post models.Post
 	err := ctx.Bind(&post)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not decode post data"))
 	}
-	addPost, err := h.services.Post.Add(&post)
+	addPost, err := h.services.Post.Add(&post, id.(int))
 
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, errors.Wrap(err, "could not create post"))

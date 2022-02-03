@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Post struct {
 	gorm.Model
@@ -25,4 +27,12 @@ type Comments []struct {
 	Name   string `json:"name" gorm:"<-"`
 	Email  string `json:"email" gorm:"<-"`
 	Body   string `json:"body" gorm:"<-"`
+}
+
+type User struct {
+	gorm.Model
+	Id       int    `json:"id" gorm:"<-"`
+	Name     string `json:"name" gorm:"<-"`
+	Username string `json:"username" gorm:"<-"`
+	Password string `json:"password" gorm:"<-"`
 }

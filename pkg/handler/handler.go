@@ -35,15 +35,21 @@ func NewHandler(services *services.Service, echo *echo.Echo) *Handler {
 //}
 
 func (h *Handler) InitRoutes() *echo.Echo {
-	post := h.echo.Group("/post")
 
+	auth := h.echo.Group("/auth")
+
+	auth.POST("/Sign-up", h.SignUp)
+	auth.POST("/Sign-in", h.SignIn)
+
+	post := h.echo.Group("/post", h.identifiedUser)
+	post.Use(h.identifiedUser)
 	post.POST("/add", h.AddPost)
 	post.PATCH("/patch/:id", h.UpdatePost)
 	post.DELETE("/del/:id", h.DelPost)
 	post.GET("/:id", h.GetPost)
 
-	comment := h.echo.Group("/comment")
-
+	comment := h.echo.Group("/comment", h.identifiedUser)
+	comment.Use(h.identifiedUser)
 	comment.POST("/add", h.AddComment)
 	comment.PATCH("/update/:id", h.UpdateComment)
 	comment.DELETE("/del/:id", h.DelComment)

@@ -8,6 +8,13 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  handler.SignInUser:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   models.Comment:
     properties:
       body:
@@ -44,6 +51,23 @@ definitions:
       user_id:
         type: integer
     type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -58,6 +82,54 @@ info:
   title: Rest-Api
   version: "1.0"
 paths:
+  /auth/Sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Authorization user in Rest-Api.
+      parameters:
+      - description: Auth user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.SignInUser'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Authorization user in Api.
+      tags:
+      - SignIn
+  /auth/Sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Add user in DB table user.
+      parameters:
+      - description: List User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      - text/xml
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add user in DB.
+      tags:
+      - SignUp
   /comment/{id}:
     get:
       consumes:
@@ -248,4 +320,9 @@ paths:
       - UpdatePost
 schemes:
 - http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
